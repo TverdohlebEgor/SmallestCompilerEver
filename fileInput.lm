@@ -1,0 +1,5 @@
+
+printman("Hello world");
+printman("I'm just the best");
+
+printman("This is it")
