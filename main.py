@@ -7,22 +7,32 @@ def compileAndRun(outputAsm):
     subprocess.run(["rm",f"{outputAsm}.o"])
     subprocess.run([f"./{outputAsm}"])
 
-def writePrint(fl,text = "Hello, world!"):
+def writePrint(fl , text : list):
     fl.write("section .text\n")
     fl.write("    global _start\n\n")
 
     fl.write("section .data\n")
-    fl.write(f"    msg db \"{text}\", 0xa\n")
-    fl.write("    len equ $ - msg\n\n")
+
+    for x in range(len(text)):
+        fl.write(f"    msg{x} db \"{text[x]}\", 0xa\n")
+        fl.write(f"    len{x} equ $ - msg{x}\n\n")
 
     fl.write("section .text\n")
     fl.write("    _start:\n\n")
 
-    fl.write("    mov edx,len\n")
-    fl.write("    mov ecx,msg\n")
-    fl.write("    mov ebx, 1\n")
-    fl.write("    mov eax, 4\n")
-    fl.write("    int 0x80\n\n")
+    for x in range(len(text)):
+        fl.write(f"    mov edx,len{x}\n")
+        fl.write(f"    mov ecx,msg{x}\n")
+        fl.write( "    mov ebx, 1\n")
+        fl.write( "    mov eax, 4\n")
+        fl.write( "    int 0x80\n\n")
+
+
+    fl.write("    jp end\n")
+
+
+    fl.write("end :\n\n")
+
     fl.write("    mov ebx, 0\n")
     fl.write("    mov eax, 1\n")
     fl.write("    int 0x80\n")
@@ -37,8 +47,10 @@ def main():
         linesOfCode = fl.read().split(";")
         linesOfCode = list(map(lambda x : x.strip("\n"),linesOfCode))
     
+    printableStuff = [ strings[10 : -2] for strings in linesOfCode if strings[:8] == "printman"]
+
     with open(f"{outputFileName}.asm","w") as fl:
-        writePrint(fl,"Hello, world!")
+        writePrint(fl,printableStuff)
     
     compileAndRun(outputFileName)
 
