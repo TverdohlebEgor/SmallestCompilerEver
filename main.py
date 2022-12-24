@@ -47,7 +47,14 @@ def main():
         linesOfCode = fl.read().split(";")
         linesOfCode = list(map(lambda x : x.strip("\n"),linesOfCode))
     
-    printableStuff = [ strings[10 : -2] for strings in linesOfCode if strings[:8] == "printman"]
+    printableStuff = []
+
+    for ind,string in enumerate(linesOfCode):
+        if string[:8] == "printman":
+            if(string[9] != '\"' or string[-2] != '\"'):
+                print(string,string[9],string[-2])
+                raise Exception(f"Error ->  you can't print a non string object line {ind+1}")
+            printableStuff.append(string[10 : -2])
 
     with open(f"{outputFileName}.asm","w") as fl:
         writePrint(fl,printableStuff)
